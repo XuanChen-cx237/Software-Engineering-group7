@@ -294,7 +294,6 @@ public class TranscationPanel extends JPanel implements TransactionObserver {
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
 
-        // Add event listeners
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -307,12 +306,31 @@ public class TranscationPanel extends JPanel implements TransactionObserver {
 
                     // Create date from selected values
                     Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.YEAR, (Integer) yearComboBox.getSelectedItem());
-                    calendar.set(Calendar.MONTH, monthComboBox.getSelectedIndex());
+                    int selectedYear = (Integer) yearComboBox.getSelectedItem();
+                    int selectedMonth = monthComboBox.getSelectedIndex();
+                    int selectedDay = Integer.parseInt((String) dayComboBox.getSelectedItem());
 
-                    // Parse selected day (from string to int)
-                    int day = Integer.parseInt((String) dayComboBox.getSelectedItem());
-                    calendar.set(Calendar.DAY_OF_MONTH, day);
+                    // Get current time parts
+                    Calendar now = Calendar.getInstance();
+                    int currentHour = now.get(Calendar.HOUR_OF_DAY);
+                    int currentMinute = now.get(Calendar.MINUTE);
+                    int currentSecond = now.get(Calendar.SECOND);
+                    int currentMillisecond = now.get(Calendar.MILLISECOND);
+
+                    // Set complete date and time
+                    calendar.set(selectedYear, selectedMonth, selectedDay,
+                            currentHour, currentMinute, currentSecond);
+                    calendar.set(Calendar.MILLISECOND, currentMillisecond);
+
+                    // Ensure date is within valid range
+                    int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    if (selectedDay > maxDay) {
+                        calendar.set(Calendar.DAY_OF_MONTH, maxDay);
+                    }
+
+                    // Print date (for debugging)
+                    System.out.println("Adding transaction - Setting date: " +
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(calendar.getTime()));
 
                     // Create and save transaction
                     Transcation transaction = new Transcation();
@@ -321,6 +339,14 @@ public class TranscationPanel extends JPanel implements TransactionObserver {
                     transaction.setCategory(category);
                     transaction.setDescription(description);
                     transaction.setDate(calendar.getTime());
+
+                    // Add debug information
+                    System.out.println("\n===== New Transaction Added =====");
+                    System.out.println("Category: " + transaction.getCategory());
+                    System.out.println("Amount: " + transaction.getAmount());
+                    System.out.println("Date: " + transaction.getDate());
+                    System.out.println("Is Income: " + transaction.isIncome());
+                    System.out.println("========================\n");
 
                     transactionService.addTransaction(transaction);
 

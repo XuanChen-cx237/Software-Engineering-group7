@@ -1,1 +1,3 @@
 # Software-Engineering-group7
+
+Team leader Chen Xuan is responsible for the AIpanel in the GUI part and the integration of the codes of other team members. Team member Long Yuxiao is responsible for the Budgetpanel in the GUI part and the modification of the mainframe architecture. Team member Fan Guangyu is responsible for the modification of the transactionpanel and the implementation of the specific functions of Budget. Team member Yin Chengze is responsible for the writing of Budgetobserver and the update of the readme. Team member Gao Tianhao is responsible for the writing of AI consultant. Team member Zhang Shengkun is responsible for the writing of budgetservice and streamcallback.

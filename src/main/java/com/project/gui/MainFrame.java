@@ -2,6 +2,7 @@ package com.project.gui;
 
 import com.project.model.Transcation;
 import com.project.gui.ChartPanel;
+import com.project.service.BudgetService;
 import com.project.service.TranscationService;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
- * 应用程序主窗口
+ * Application main window
  */
 public class MainFrame extends JFrame {
     private JPanel contentPane;
@@ -22,12 +23,15 @@ public class MainFrame extends JFrame {
 
     private TranscationPanel transactionPanel;
     private JPanel chartPanel;
+    private JPanel budgetPanel;
     private JPanel aiAnalysisPanel;
 
     private TranscationService transactionService;
+    private BudgetService budgetService;
 
     public MainFrame() {
         transactionService = new TranscationService();
+        budgetService = new BudgetService(transactionService);
         initializeUI();
     }
 
@@ -56,7 +60,7 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Create the left panel
+     * Create left panel
      */
     private void createLeftPanel() {
         leftPanel = new JPanel();
@@ -71,8 +75,9 @@ public class MainFrame extends JFrame {
         titleLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
 
         // Create module buttons
-        JButton transactionBtn = createModuleButton("Transaction", "transaction");
-        JButton chartBtn = createModuleButton("Chart", "chart");
+        JButton transactionBtn = createModuleButton("Transactions", "transaction");
+        JButton chartBtn = createModuleButton("Charts", "chart");
+        JButton budgetBtn = createModuleButton("Budget", "budget");
         JButton aiAnalysisBtn = createModuleButton("AI Analysis", "aianalysis");
 
         // Add components to left panel
@@ -80,6 +85,8 @@ public class MainFrame extends JFrame {
         leftPanel.add(transactionBtn);
         leftPanel.add(Box.createVerticalStrut(10));
         leftPanel.add(chartBtn);
+        leftPanel.add(Box.createVerticalStrut(10));
+        leftPanel.add(budgetBtn);
         leftPanel.add(Box.createVerticalStrut(10));
         leftPanel.add(aiAnalysisBtn);
         leftPanel.add(Box.createVerticalGlue());
@@ -109,39 +116,32 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * 创建右侧面板
+     * Create right panel
      */
     private void createRightPanel() {
         rightPanel = new JPanel();
         cardLayout = new CardLayout();
         rightPanel.setLayout(cardLayout);
 
-        // 初始化各模块面板
+        // Initialize each module panel
         transactionPanel = new TranscationPanel(transactionService);
         chartPanel = new ChartPanel(transactionService);
-        aiAnalysisPanel = createAIAnalysisPanel();
+        budgetPanel = new BudgetPanel(budgetService, transactionService);
 
-        // 添加面板到卡片布局
+        // Use AIPanel as the AI Analysis panel
+        aiAnalysisPanel = new AIPanel(budgetService, transactionService);
+
+        // Add panels to card layout
         rightPanel.add(transactionPanel, "transaction");
         rightPanel.add(chartPanel, "chart");
+        rightPanel.add(budgetPanel, "budget");
         rightPanel.add(aiAnalysisPanel, "aianalysis");
 
         contentPane.add(rightPanel, BorderLayout.CENTER);
     }
 
     /**
-     * Create the AI Analysis panel (to be implemented)
-     */
-    private JPanel createAIAnalysisPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("AI Analysis Module (Coming Soon)", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(label, BorderLayout.CENTER);
-        return panel;
-    }
-
-    /**
-     * 显示指定的面板
+     * Show specified panel
      */
     private void showPanel(String panelName) {
         cardLayout.show(rightPanel, panelName);
